@@ -131,4 +131,5 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 # OAuth
 
+SOCIAL_AUTH_VEND_EXTRA_DATA = ['expires', 'expires_in']
 from .vend_keys import KEY, SECRET
