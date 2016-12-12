@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'social_django',
     'social_core',
+    'cashup',
 ]
 
 AUTHENTICATION_BACKENDS = [
