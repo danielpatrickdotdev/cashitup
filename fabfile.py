@@ -1,7 +1,7 @@
 from fabric.contrib.files import append, exists, sed
 from fabric.contrib.console import confirm
 from fabric.context_managers import prefix, cd
-from fabric.api import env, local, run, sudo, settings
+from fabric.api import env, local, run, sudo, settings, put
 from fabric.network import disconnect_all
 from os import path
 import random
@@ -31,6 +31,10 @@ def get_database_settings_path(user, site):
 
 def get_secret_key_path(user, site):
     return path.join(get_settings_folder(user, site), 'secret_key.py')
+
+def get_local_vend_keys_path():
+    return path.join(path.dirname(path.abspath(__file__)),
+                     REPO_NAME, 'vend_keys.py')
 
 def provision(name):
     """
@@ -215,6 +219,8 @@ def update_settings(site_name=None):
         site_name = env.host
     settings_path = get_settings_path(env.user, site_name)
     secret_key_path = get_secret_key_path(env.user, site_name)
+    settings_folder_path = get_settings_folder(env.user, site_name)
+    local_vend_keys_path = get_local_vend_keys_path()
 
     sed(settings_path, 'DEBUG = True', 'DEBUG = False')
     sed(settings_path, 'ALLOWED_HOSTS =.*',
@@ -224,6 +230,8 @@ def update_settings(site_name=None):
         key = ''.join(random.SystemRandom().choice(chars) for _ in range(50))
         append(secret_key_path, "SECRET_KEY = '{}'".format(key))
     append(settings_path, '\nfrom .secret_key import SECRET_KEY')
+
+    put(local_vend_keys_path, settings_folder_path)
 
 def collect_static_files(site_name=None):
     """
