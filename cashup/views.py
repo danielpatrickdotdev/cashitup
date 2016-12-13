@@ -1,9 +1,14 @@
 from django.shortcuts import render
 from social_django.models import UserSocialAuth
 from datetime import datetime
+from dateutil.parser import parse as date_parse
 from django.conf import settings
 import requests
 import json
+
+def vend_api_url(shop, resource):
+    resources = {'register-list': 'api/registers'}
+    return 'https://{0}.vendhq.com/{1}'.format(shop, resources[resource])
 
 def select_register(request):
     u = UserSocialAuth.objects.get(user=request.user)
@@ -18,12 +23,13 @@ def select_register(request):
     headers = {'Authorization': 'Bearer {}'.format(token),
                'Content-Type': 'application/json',
                'Accept': 'application/json'}
-    url = 'https://{}.vendhq.com/api/registers'.format(shop)
-    r = requests.get(url, headers=headers)
+    r = requests.get(vend_api_url(shop, 'register-list'), headers=headers)
     data = json.loads(r.text)
 
-    if data and ('registers' in data) and data['registers']:
-        registers = [u['name'] for u in data['registers'] if not u['register_close_time']]
+    reg_data = data.get('registers', []) if isinstance (data, dict) else []
+    registers = [{'name': reg['name'],
+                  'open_since': date_parse(reg['register_open_time'])} \
+                        for reg in reg_data if not reg['register_close_time']]
 
     return render(request, 'cashup/select_register.html',
                   {'registers': registers})

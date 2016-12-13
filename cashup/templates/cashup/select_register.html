@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html>{% load humanize %}
 <html>
     <head>
     <title>Select register</title>
@@ -7,7 +7,7 @@
     <body>
         <p>Registers available:</p>{% if registers %}
         <ul>{% for register in registers %}
-            <li>{{ register }}</li>{% endfor %}
+            <li><p>{{ register.name }}</p><p>Open since: {{ register.open_since|naturaltime }}</p></li>{% endfor %}
         </ul>{% else %}
         <p>No open registers</p>{% endif %}
     </body>
