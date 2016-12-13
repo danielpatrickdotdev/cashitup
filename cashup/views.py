@@ -7,7 +7,7 @@ import requests
 import json
 
 def vend_api_url(shop, resource):
-    resources = {'register-list': 'api/registers'}
+    resources = {'register-list': 'api/2.0/registers'}
     return 'https://{0}.vendhq.com/{1}'.format(shop, resources[resource])
 
 def get_vend_registers(user):
@@ -22,18 +22,18 @@ def get_vend_registers(user):
 
     headers = {'Authorization': 'Bearer {}'.format(token),
                'Content-Type': 'application/json',
-               'Accept': 'application/json'}
+               'Accept': 'application/json',
+               'User-Agent': 'CashItUp'}
     r = requests.get(vend_api_url(shop, 'register-list'), headers=headers)
     data = json.loads(r.text)
 
-    return data.get('registers', []) if isinstance (data, dict) else []
+    return data.get('data', []) if isinstance (data, dict) else []
 
 def select_register(request):
     reg_data = get_vend_registers(request.user)
     registers = [{'name': reg['name'],
                   'open_since': date_parse(reg['register_open_time'])} \
-                        for reg in reg_data if not reg['register_close_time']]
+                        for reg in reg_data if reg['is_open']]
 
     return render(request, 'cashup/select_register.html',
                   {'registers': registers})
-
