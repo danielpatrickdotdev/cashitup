@@ -1,7 +1,7 @@
 from fabric.contrib.files import append, exists, sed
 from fabric.contrib.console import confirm
 from fabric.context_managers import prefix, cd
-from fabric.api import env, local, run, sudo, settings, put
+from fabric.api import env, local, run, sudo, settings, put, prompt
 from fabric.network import disconnect_all
 from os import path
 import random
@@ -221,6 +221,13 @@ def update_settings(site_name=None):
     secret_key_path = get_secret_key_path(env.user, site_name)
     settings_folder_path = get_settings_folder(env.user, site_name)
     local_vend_keys_path = get_local_vend_keys_path()
+
+    if not path.exists(local_vend_keys_path):
+        vend_key = prompt("Enter vend key:")
+        vend_secret = prompt("Enter vend secret:")
+        with open(local_vend_keys_path, "a") as vend_keys_file:
+            vend_keys_file.write("KEY = '{}'\n".format(vend_key))
+            vend_keys_file.write("SECRET = '{}'\n".format(vend_secret))
 
     sed(settings_path, 'DEBUG = True', 'DEBUG = False')
     sed(settings_path, 'ALLOWED_HOSTS =.*',
