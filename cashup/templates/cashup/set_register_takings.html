@@ -1,0 +1,16 @@
+<!DOCTYPE html>{% load humanize %}
+<html>
+    <head>
+    <title>Set register takings: {{ register.name }}</title>
+    </head>
+    </style>
+    <body>
+        <h1>{{ register.name }}</h1>
+        <p>Open since {{ register.open_since|date:"g:iA"|lower }} {{ register.open_since|naturalday }}</p>
+        <p>Sales</p>
+        <ul>
+            <li>Cash: {{ cash_sales }}</li>
+            <li>Card: {{ card_sales }}</li>
+            <li>Total: {{ total_sales }}</li>
+    </body>
+</html>
