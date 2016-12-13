@@ -9,10 +9,11 @@ def select_register(request):
     u = UserSocialAuth.objects.get(user=request.user)
     shop = u.extra_data['domain_prefix']
     token = u.extra_data['access_token']
-    expiry = datetime.fromtimestamp(u.extra_data['expires'])
-    if expiry < datetime.now():
-        # do something
-        pass
+    if 'expires' in u.extra_data:
+        expiry = datetime.fromtimestamp(u.extra_data['expires'])
+        if expiry < datetime.now():
+            # do something
+            pass
 
     headers = {'Authorization': 'Bearer {}'.format(token),
                'Content-Type': 'application/json',
