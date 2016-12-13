@@ -22,7 +22,7 @@ def select_register(request):
     data = json.loads(r.text)
 
     if data and ('registers' in data) and data['registers']:
-        registers = [u['name'] for u in data['registers']]
+        registers = [u['name'] for u in data['registers'] if not u['register_close_time']]
 
     return render(request, 'cashup/select_register.html',
                   {'registers': registers})

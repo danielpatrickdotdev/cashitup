@@ -5,9 +5,10 @@
     </head>
     </style>
     <body>
-        <p>Registers available:</p>
+        <p>Registers available:</p>{% if registers %}
         <ul>{% for register in registers %}
-            <li>{{ register }}</li>
-        {% endfor %}</ul>
+            <li>{{ register }}</li>{% endfor %}
+        </ul>{% else %}
+        <p>No open registers</p>{% endif %}
     </body>
 </html>
