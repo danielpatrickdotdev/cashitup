@@ -10,8 +10,8 @@ def vend_api_url(shop, resource):
     resources = {'register-list': 'api/registers'}
     return 'https://{0}.vendhq.com/{1}'.format(shop, resources[resource])
 
-def select_register(request):
-    u = UserSocialAuth.objects.get(user=request.user)
+def get_vend_registers(user):
+    u = UserSocialAuth.objects.get(user=user)
     shop = u.extra_data['domain_prefix']
     token = u.extra_data['access_token']
     if 'expires' in u.extra_data:
@@ -26,7 +26,10 @@ def select_register(request):
     r = requests.get(vend_api_url(shop, 'register-list'), headers=headers)
     data = json.loads(r.text)
 
-    reg_data = data.get('registers', []) if isinstance (data, dict) else []
+    return data.get('registers', []) if isinstance (data, dict) else []
+
+def select_register(request):
+    reg_data = get_vend_registers(request.user)
     registers = [{'name': reg['name'],
                   'open_since': date_parse(reg['register_open_time'])} \
                         for reg in reg_data if not reg['register_close_time']]
