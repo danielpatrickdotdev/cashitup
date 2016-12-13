@@ -15,6 +15,8 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from .views import select_register
 
 urlpatterns = [
+    url(r'^$', select_register, name='select_register'),
 ]

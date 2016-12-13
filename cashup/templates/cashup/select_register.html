@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <title>Select register</title>
+    </head>
+    </style>
+    <body>
+        <p>Registers available:</p>
+        <ul>{% for register in registers %}
+            <li>{{ register }}</li>
+        {% endfor %}</ul>
+    </body>
+</html>
