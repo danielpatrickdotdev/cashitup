@@ -7,6 +7,7 @@ from django.utils import timezone
 import requests
 import json
 from .models import Register, Outlet
+import uuid
 
 # Helper functions
 
@@ -60,7 +61,7 @@ def get_vend_registers(user):
     for reg in data.get('data', []) if isinstance (data, dict) else []:
         outlet = Outlet(id=reg['outlet_id'])
         outlet.save()
-        register = save_vend_register(user, reg, outlet)
+        register = save_vend_register(user, reg)
     return Register.objects.all()
 
 def get_vend_register(user, reg_id):
@@ -74,16 +75,29 @@ def get_vend_register(user, reg_id):
         regsiter = save_vend_register(user, data.get('data', None))
     return register
 
-def get_sales_data(user, since=None):
+def get_sales_data(user, register):
     shop, token = get_shop_and_token(user)
     headers = get_headers(token)
-    url = vend_api_url(shop, 'register-sales-list')
-    if since:
-        url += '?since={}'.format(since)
+    since = register.open_time.replace(tzinfo=None).isoformat()
+    url = vend_api_url(shop, 'register-sales-list') + '?since={}'.format(since)
     r = requests.get(url, headers=headers)
     data = json.loads(r.text)
 
-    return data.get('register_sales', []) if isinstance (data, dict) else []
+    sales = data.get('register_sales', []) if isinstance (data, dict) else []
+    sales_count = 0
+    cash_sales = 0
+    card_sales = 0
+    total_sales = 0
+    for sale in sales:
+        if sale['register_id'] == str(register.id):
+            sales_count += 1
+            total_sales += sale['totals']['total_payment']
+            for payment in sale['register_sale_payments']:
+                if payment['name'] == 'Cash':
+                    cash_sales += payment['amount']
+                if payment['name'] == 'Credit Card':
+                    card_sales += payment['amount']
+    return (sales_count, cash_sales, card_sales, total_sales)
 
 # Views
 
@@ -96,20 +110,11 @@ def select_register(request):
 def set_register_takings(request, register_id):
     register = get_vend_register(request.user, register_id)
 
-    sales = get_sales_data(request.user)
-    cash_sales = 0
-    card_sales = 0
-    total_sales = 0
-    for sale in sales:
-        if sale['register_id'] == register_id:
-            total_sales += sale['totals']['total_payment']
-            for payment in sale['register_sale_payments']:
-                if payment['name'] == 'Cash':
-                    cash_sales += payment['amount']
-                if payment['name'] == 'Credit Card':
-                    card_sales += payment['amount']
+    count, cash, card, total = get_sales_data(request.user, register)
+
     return render(request, 'cashup/set_register_takings.html',
                   {'register': register,
-                   'cash_sales': cash_sales,
-                   'card_sales': card_sales,
-                   'total_sales': total_sales})
+                   'cash_sales': cash,
+                   'card_sales': card,
+                   'total_sales': total,
+                   'number_of_sales': count})
