@@ -6,8 +6,7 @@
     </style>
     <body>
         <h1>{{ register.name }}</h1>
-        <p>Open since {{ register.open_since|date:"g:iA"|lower }} {{ register.open_since|naturalday }}</p>
-        <p>Sales</p>
+        <p>{% if register.is_open %}Value of {{ number_of_sales }} sale{{ number_of_sales|pluralize }} since {{ register.open_time|date:"g:iA"|lower }} {{ register.open_time|naturalday }}:{% else %}Register closed {{ register.closed_time|date:"g:iA"|lower }} {{ register.closed_time|naturalday }}{% endif %}</p>
         <ul>
             <li>Cash: {{ cash_sales }}</li>
             <li>Card: {{ card_sales }}</li>
