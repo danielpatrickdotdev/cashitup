@@ -1,5 +1,6 @@
 from django.db import models
 from social_django.models import UserSocialAuth
+import decimal
 
 class Outlet(models.Model):
     id = models.UUIDField(primary_key=True, editable=False)
@@ -22,3 +23,25 @@ class RegisterTakings(models.Model):
     cash_takings = models.DecimalField(max_digits=12, decimal_places=2)
     card_takings = models.DecimalField(max_digits=12, decimal_places=2)
     total_takings = models.DecimalField(max_digits=12, decimal_places=2)
+
+class RegisterCashup(models.Model):
+    register_takings = models.ForeignKey(RegisterTakings, on_delete=models.CASCADE,
+                                    null=True, editable=False)
+    note_GBP50 = models.PositiveIntegerField(default=0)
+    note_GBP20 = models.PositiveIntegerField(default=0)
+    note_GBP10 = models.PositiveIntegerField(default=0)
+    note_GBP5 = models.PositiveIntegerField(default=0)
+    coin_GBP2 = models.PositiveIntegerField(default=0)
+    coin_GBP1 = models.PositiveIntegerField(default=0)
+    coin_50p = models.PositiveIntegerField(default=0)
+    coin_20p = models.PositiveIntegerField(default=0)
+    coin_10p = models.PositiveIntegerField(default=0)
+    coin_5p = models.PositiveIntegerField(default=0)
+    coin_2p = models.PositiveIntegerField(default=0)
+    coin_1p = models.PositiveIntegerField(default=0)
+    till_float = models.DecimalField(max_digits=12, decimal_places=2,
+                                default=decimal.Decimal('225.00'))
+    till_total = models.DecimalField(max_digits=12, decimal_places=2,
+                                blank=True,  null=True, editable=False)
+    till_difference = models.DecimalField(max_digits=12, decimal_places=2,
+                                blank=True,  null=True, editable=False)
