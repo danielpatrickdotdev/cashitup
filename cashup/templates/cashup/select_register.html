@@ -7,7 +7,7 @@
     <body>
         <p>Registers available:</p>{% if registers %}
         <ul>{% for register in registers %}
-            <li><a href="{% url 'set_register_takings' register.id %}"><p>{{ register.name }}</p></a><p>Open since: {{ register.open_since|naturaltime }}</p></li>{% endfor %}
+            <li><a href="{% url 'set_register_takings' register.id %}">{{ register.name }}</a><p>Open since: {{ register.open_since|naturaltime }}</p></li>{% endfor %}
         </ul>{% else %}
         <p>No open registers</p>{% endif %}
     </body>
