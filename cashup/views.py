@@ -4,9 +4,12 @@ from datetime import datetime, timedelta
 from dateutil.parser import parse as date_parse
 from django.conf import settings
 from django.utils import timezone
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 import requests
 import json
-from .models import Register, Outlet
+from .models import Register, Outlet, RegisterTakings
+from .forms import RegisterTakingsForm
 import uuid
 
 # Helper functions
@@ -109,12 +112,29 @@ def select_register(request):
 
 def set_register_takings(request, register_id):
     register = get_vend_register(request.user, register_id)
+    count = None
 
-    count, cash, card, total = get_sales_data(request.user, register)
+    if request.method == 'POST':
+        try:
+            reg_takings = RegisterTakings.objects.get(register=register,
+                                register_open_time=register.open_time)
+        except RegisterTakings.DoesNotExist:
+            reg_takings = RegisterTakings(register=register,
+                                register_open_time=register.open_time)
+        form = RegisterTakingsForm(request.POST, instance=reg_takings)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('select_register'))
+
+    if register.is_open:
+        count, cash, card, total = get_sales_data(request.user, register)
+        form = RegisterTakingsForm(initial={'cash_takings': cash,
+                                                'card_takings': card,
+                                                'total_takings': total})
+    else:
+        form = None
 
     return render(request, 'cashup/set_register_takings.html',
                   {'register': register,
-                   'cash_sales': cash,
-                   'card_sales': card,
-                   'total_sales': total,
+                   'form': form,
                    'number_of_sales': count})
