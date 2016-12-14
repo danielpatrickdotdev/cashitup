@@ -36,6 +36,15 @@ def get_local_vend_keys_path():
     return path.join(path.dirname(path.abspath(__file__)),
                      REPO_NAME, 'vend_keys.py')
 
+def create_vend_keys_file():
+    local_vend_keys_path = get_local_vend_keys_path()
+    if not path.exists(local_vend_keys_path):
+        vend_key = prompt("Enter vend key:")
+        vend_secret = prompt("Enter vend secret:")
+        with open(local_vend_keys_path, "a") as vend_keys_file:
+            vend_keys_file.write("KEY = '{}'\n".format(vend_key))
+            vend_keys_file.write("SECRET = '{}'\n".format(vend_secret))
+
 def provision(name):
     """
     Usage:
@@ -221,13 +230,7 @@ def update_settings(site_name=None):
     secret_key_path = get_secret_key_path(env.user, site_name)
     settings_folder_path = get_settings_folder(env.user, site_name)
     local_vend_keys_path = get_local_vend_keys_path()
-
-    if not path.exists(local_vend_keys_path):
-        vend_key = prompt("Enter vend key:")
-        vend_secret = prompt("Enter vend secret:")
-        with open(local_vend_keys_path, "a") as vend_keys_file:
-            vend_keys_file.write("KEY = '{}'\n".format(vend_key))
-            vend_keys_file.write("SECRET = '{}'\n".format(vend_secret))
+    create_vend_keys_file()
 
     sed(settings_path, 'DEBUG = True', 'DEBUG = False')
     sed(settings_path, 'ALLOWED_HOSTS =.*',
