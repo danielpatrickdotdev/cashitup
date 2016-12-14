@@ -15,7 +15,9 @@ class Register(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
 class RegisterTakings(models.Model):
-    register = models.ForeignKey(Register, on_delete=models.SET_NULL, null=True)
+    register = models.ForeignKey(Register, on_delete=models.SET_NULL,
+                                    null=True, editable=False)
+    register_open_time = models.DateTimeField(editable=False)
     updated = models.DateTimeField(auto_now=True)
     cash_takings = models.DecimalField(max_digits=12, decimal_places=2)
     card_takings = models.DecimalField(max_digits=12, decimal_places=2)
