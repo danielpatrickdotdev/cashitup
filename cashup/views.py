@@ -8,9 +8,10 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 import requests
 import json
-from .models import Register, Outlet, RegisterTakings
-from .forms import RegisterTakingsForm
+from .models import Register, Outlet, RegisterTakings, RegisterCashup
+from .forms import RegisterTakingsForm, RegisterCashupForm
 import uuid
+import decimal
 
 # Helper functions
 
@@ -138,3 +139,46 @@ def set_register_takings(request, register_id):
                   {'register': register,
                    'form': form,
                    'number_of_sales': count})
+
+def get_till_total(reg_cashup):
+    total = decimal.Decimal('0.00')
+    total += decimal.Decimal('50.00') * reg_cashup.note_GBP50
+    total += decimal.Decimal('20.00') * reg_cashup.note_GBP20
+    total += decimal.Decimal('10.00') * reg_cashup.note_GBP10
+    total += decimal.Decimal('5.00') * reg_cashup.note_GBP5
+    total += decimal.Decimal('2.00') * reg_cashup.coin_GBP2
+    total += decimal.Decimal('1.00') * reg_cashup.coin_GBP1
+    total += decimal.Decimal('0.50') * reg_cashup.coin_50p
+    total += decimal.Decimal('0.20') * reg_cashup.coin_20p
+    total += decimal.Decimal('0.10') * reg_cashup.coin_10p
+    total += decimal.Decimal('0.05') * reg_cashup.coin_5p
+    total += decimal.Decimal('0.02') * reg_cashup.coin_2p
+    total += decimal.Decimal('0.01') * reg_cashup.coin_1p
+    return total
+
+def cashup_register(request, register_takings_id):
+    register_takings = RegisterTakings.objects.get(id=register_takings_id)
+
+    if request.method == 'POST':
+        try:
+            register_cashup = RegisterCashup.objects.get(
+                                    register_takings=register_takings)
+        except RegisterCashup.DoesNotExist:
+            register_cashup = RegisterCashup(register_takings=register_takings)
+        form = RegisterCashupForm(request.POST, instance=register_cashup)
+        if form.is_valid():
+            reg_cashup = form.save(commit=False)
+            till_total = get_till_total(reg_cashup)
+            till_float = reg_cashup.till_float
+            difference = till_total - register_takings.cash_takings - till_float
+            reg_cashup.till_total = till_total
+            reg_cashup.till_difference = difference
+            reg_cashup.save()
+            return HttpResponseRedirect(reverse('select_register'))
+    else:
+        form = RegisterCashupForm()
+
+    return render(request, 'cashup/register_cashup.html',
+                  {'register': register_takings.register,
+                   'register_takings': register_takings,
+                   'form': form})

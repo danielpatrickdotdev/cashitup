@@ -1,0 +1,16 @@
+<!DOCTYPE html>{% load humanize %}
+<html>
+    <head>
+    <title>Register cashup: {{ register.name }}</title>
+    </head>
+    </style>
+    <body>
+        <h1>{{ register.name }}</h1>
+        <p>Cash sales: {{ register_takings.cash_sales }}</p>
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Submit" />
+        </form>
+    </body>
+</html>
