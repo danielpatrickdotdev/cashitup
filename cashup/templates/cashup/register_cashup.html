@@ -1,19 +1,14 @@
-<!DOCTYPE html>{% load humanize %}
-<html>
-    <head>
-        <title>Register cashup: {{ register.name }}</title>
-    </head>
-    <body>
-        <h1>{{ register.name }}</h1>
-        <p>Cash sales: {{ register_takings.cash_takings }}</p>
-        <form action="" method="post">
-            {% csrf_token %}{% for field in form %}
-            <div class="field {{ field.label }}">
-                {{ field.label_tag }} {{ field }}{% if field.help_text %}
-                <p class="help">{{ field.help_text|safe }}</p>{% endif %}{% if field.errors %}
-                {{ field.errors }}{% endif %}
-            </div>{% endfor %}
-            <input type="submit" value="Submit" />
-        </form>
-    </body>
-</html>
+{% extends "cashup/register_base.html" %}{% load humanize %}
+{% block title %}Register cashup: {{ register.name }}{% endblock %}
+{% block body %}{{ register.name }}</h1>
+<p>Cash sales: {{ register_takings.cash_takings }}</p>
+<form action="" method="post">
+    {% csrf_token %}{% for field in form %}
+    <div class="field {{ field.label }}">
+        {{ field.label_tag }} {{ field }}{% if field.help_text %}
+        <p class="help">{{ field.help_text|safe }}</p>{% endif %}{% if field.errors %}
+        {{ field.errors }}{% endif %}
+    </div>{% endfor %}
+    <input type="submit" value="Submit" />
+</form>
+{% endblock %}
