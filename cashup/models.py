@@ -4,6 +4,7 @@ import decimal
 
 class Outlet(models.Model):
     id = models.UUIDField(primary_key=True, editable=False)
+    name = models.CharField(max_length=256)
 
 class Register(models.Model):
     id = models.UUIDField(primary_key=True, editable=False)
