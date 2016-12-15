@@ -1,11 +1,15 @@
 from django.db import models
 from django.urls import reverse
+from django.contrib.humanize.templatetags.humanize import naturaltime
 from social_django.models import UserSocialAuth
 import decimal
 
 class Outlet(models.Model):
     id = models.UUIDField(primary_key=True, editable=False)
     name = models.CharField(max_length=256)
+
+    def __str__(self):
+        return self.name
 
 class Register(models.Model):
     id = models.UUIDField(primary_key=True, editable=False)
@@ -17,6 +21,9 @@ class Register(models.Model):
     close_time = models.DateTimeField(blank=True, null=True)
     updated = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return self.name
+
 class RegisterTakings(models.Model):
     register = models.ForeignKey(Register, on_delete=models.CASCADE,
                                     editable=False)
@@ -25,6 +32,13 @@ class RegisterTakings(models.Model):
     cash_takings = models.DecimalField(max_digits=12, decimal_places=2)
     card_takings = models.DecimalField(max_digits=12, decimal_places=2)
     total_takings = models.DecimalField(max_digits=12, decimal_places=2)
+
+    def get_absolute_url(self):
+        return reverse('set_register_takings', args=[str(self.register.id)])
+
+    def __str__(self):
+        return '{0} opened {1}'.format(self.register,
+                                          naturaltime(self.register_open_time))
 
 class RegisterCashup(models.Model):
     register_takings = models.ForeignKey(RegisterTakings, on_delete=models.CASCADE,
@@ -47,3 +61,12 @@ class RegisterCashup(models.Model):
                                 blank=True,  null=True, editable=False)
     till_difference = models.DecimalField(max_digits=12, decimal_places=2,
                                 blank=True,  null=True, editable=False)
+
+    def get_absolute_url(self):
+        return reverse('cashup_register', args=[str(self.register_takings.id)])
+
+    def __str__(self):
+        return 'Cashup for {0} opened {1}'.format(
+                    self.register_takings.register,
+                    naturaltime(self.register_takings.register_open_time),
+        )

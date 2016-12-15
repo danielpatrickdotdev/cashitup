@@ -187,8 +187,7 @@ def cashup_register(request, register_takings_id):
             reg_cashup.till_total = till_total
             reg_cashup.till_difference = difference
             reg_cashup.save()
-            return HttpResponseRedirect(
-                        reverse('cashup_register', args=[register_takings.id]))
+            return HttpResponseRedirect(reg_cashup.get_absolute_url())
     else:
         form = RegisterCashupForm(instance=register_cashup)
 
