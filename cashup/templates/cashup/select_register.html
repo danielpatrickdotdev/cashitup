@@ -1,7 +1,8 @@
-<!DOCTYPE html>{% load humanize %}
+<!DOCTYPE html>{% load humanize %}{% load staticfiles %}
 <html>
     <head>
         <title>Select register</title>
+        <script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
     </head>
     <body>
         <p>Registers available:</p>{% if registers %}
