@@ -7,7 +7,6 @@ from django.utils import timezone
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 import requests
-import json
 from .models import Register, Outlet, RegisterTakings, RegisterCashup
 from .forms import RegisterTakingsForm, RegisterCashupForm
 import uuid
@@ -62,7 +61,7 @@ def get_vend_registers(user):
     shop, token = get_shop_and_token(user)
     headers = get_headers(token)
     r = requests.get(vend_api_url(shop, 'register-list'), headers=headers)
-    data = json.loads(r.text)
+    data = r.json()
 
     for reg in data.get('data', []) if isinstance (data, dict) else []:
         outlet_id = reg['outlet_id']
@@ -71,7 +70,7 @@ def get_vend_registers(user):
         except Outlet.DoesNotExist:
             r = requests.get(vend_api_url(shop, 'outlet',
                                         id=outlet_id), headers=headers)
-            outlet_data = json.loads(r.text)
+            outlet_data = r.json()
             outlet_dict = outlet_data.get('data', None) if \
                                     isinstance(outlet_data, dict) else None
             if outlet_dict:
@@ -88,7 +87,7 @@ def get_vend_register(user, reg_id):
         shop, token = get_shop_and_token(user)
         headers = get_headers(token)
         r = requests.get(vend_api_url(shop, 'register', reg_id), headers=headers)
-        data = json.loads(r.text)
+        data = r.json()
         regsiter = save_vend_register(user, data.get('data', None))
     return register
 
@@ -98,7 +97,7 @@ def get_sales_data(user, register):
     since = register.open_time.replace(tzinfo=None).isoformat()
     url = vend_api_url(shop, 'register-sales-list') + '?since={}'.format(since)
     r = requests.get(url, headers=headers)
-    data = json.loads(r.text)
+    data = r.json()
 
     sales = data.get('register_sales', []) if isinstance (data, dict) else []
     sales_count = 0
