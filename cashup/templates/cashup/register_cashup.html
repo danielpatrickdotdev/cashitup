@@ -6,7 +6,7 @@
     </style>
     <body>
         <h1>{{ register.name }}</h1>
-        <p>Cash sales: {{ register_takings.cash_sales }}</p>
+        <p>Cash sales: {{ register_takings.cash_takings }}</p>
         <form action="" method="post">
             {% csrf_token %}
             {{ form.as_p }}
