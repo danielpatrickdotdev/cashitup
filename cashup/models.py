@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from social_django.models import UserSocialAuth
 import decimal
 
@@ -17,8 +18,8 @@ class Register(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
 class RegisterTakings(models.Model):
-    register = models.ForeignKey(Register, on_delete=models.SET_NULL,
-                                    null=True, editable=False)
+    register = models.ForeignKey(Register, on_delete=models.CASCADE,
+                                    editable=False)
     register_open_time = models.DateTimeField(editable=False)
     updated = models.DateTimeField(auto_now=True)
     cash_takings = models.DecimalField(max_digits=12, decimal_places=2)
@@ -27,7 +28,7 @@ class RegisterTakings(models.Model):
 
 class RegisterCashup(models.Model):
     register_takings = models.ForeignKey(RegisterTakings, on_delete=models.CASCADE,
-                                    null=True, editable=False)
+                                    editable=False)
     note_GBP50 = models.PositiveIntegerField("£50 notes", default=0)
     note_GBP20 = models.PositiveIntegerField("£20 notes", default=0)
     note_GBP10 = models.PositiveIntegerField("£10 notes", default=0)
