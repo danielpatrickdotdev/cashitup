@@ -7,8 +7,12 @@
         <h1>{{ register.name }}</h1>
         <p>Cash sales: {{ register_takings.cash_takings }}</p>
         <form action="" method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
+            {% csrf_token %}{% for field in form %}
+            <div class="field {{ field.label }}">
+                {{ field.label_tag }} {{ field }}{% if field.help_text %}
+                <p class="help">{{ field.help_text|safe }}</p>{% endif %}{% if field.errors %}
+                {{ field.errors }}{% endif %}
+            </div>{% endfor %}
             <input type="submit" value="Submit" />
         </form>
     </body>
