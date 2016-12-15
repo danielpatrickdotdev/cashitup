@@ -1,9 +1,8 @@
 <!DOCTYPE html>{% load humanize %}
 <html>
     <head>
-    <title>Set register takings: {{ register.name }}</title>
+        <title>Set register takings: {{ register.name }}</title>
     </head>
-    </style>
     <body>
         <h1>{{ register.name }}</h1>
         <p>{% if register.is_open %}Value of {{ number_of_sales }} sale{{ number_of_sales|pluralize }} since {{ register.open_time|date:"g:iA"|lower }} {{ register.open_time|naturalday }}:{% else %}Register closed {{ register.closed_time|date:"g:iA"|lower }} {{ register.closed_time|naturalday }}{% endif %}</p>
