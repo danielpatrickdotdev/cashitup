@@ -124,8 +124,9 @@ def set_register_takings(request, register_id):
                                 register_open_time=register.open_time)
         form = RegisterTakingsForm(request.POST, instance=reg_takings)
         if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse('select_register'))
+            register_takings = form.save()
+            return HttpResponseRedirect(
+                        reverse('cashup_register', args=[register_takings.id]))
 
     if register.is_open:
         count, cash, card, total = get_sales_data(request.user, register)
@@ -158,13 +159,13 @@ def get_till_total(reg_cashup):
 
 def cashup_register(request, register_takings_id):
     register_takings = RegisterTakings.objects.get(id=register_takings_id)
+    try:
+        register_cashup = RegisterCashup.objects.get(
+                                register_takings=register_takings)
+    except RegisterCashup.DoesNotExist:
+        register_cashup = RegisterCashup(register_takings=register_takings)
 
     if request.method == 'POST':
-        try:
-            register_cashup = RegisterCashup.objects.get(
-                                    register_takings=register_takings)
-        except RegisterCashup.DoesNotExist:
-            register_cashup = RegisterCashup(register_takings=register_takings)
         form = RegisterCashupForm(request.POST, instance=register_cashup)
         if form.is_valid():
             reg_cashup = form.save(commit=False)
@@ -174,9 +175,10 @@ def cashup_register(request, register_takings_id):
             reg_cashup.till_total = till_total
             reg_cashup.till_difference = difference
             reg_cashup.save()
-            return HttpResponseRedirect(reverse('select_register'))
+            return HttpResponseRedirect(
+                        reverse('cashup_register', args=[register_takings.id]))
     else:
-        form = RegisterCashupForm()
+        form = RegisterCashupForm(instance=register_cashup)
 
     return render(request, 'cashup/register_cashup.html',
                   {'register': register_takings.register,
