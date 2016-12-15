@@ -18,7 +18,9 @@ import decimal
 def vend_api_url(shop, resource, id=None):
     resources = {'register-list': 'api/2.0/registers',
                  'register': 'api/2.0/registers/{}'.format(id),
-                 'register-sales-list': 'api/register_sales'}
+                 'register-sales-list': 'api/register_sales',
+                 'outlet': 'api/2.0/outlets/{}'.format(id),
+    }
     return 'https://{0}.vendhq.com/{1}'.format(shop, resources[resource])
 
 def get_headers(token):
@@ -63,8 +65,19 @@ def get_vend_registers(user):
     data = json.loads(r.text)
 
     for reg in data.get('data', []) if isinstance (data, dict) else []:
-        outlet = Outlet(id=reg['outlet_id'])
-        outlet.save()
+        outlet_id = reg['outlet_id']
+        try:
+            outlet = Outlet.objects.get(id=outlet_id)
+        except Outlet.DoesNotExist:
+            r = requests.get(vend_api_url(shop, 'outlet',
+                                        id=outlet_id), headers=headers)
+            outlet_data = json.loads(r.text)
+            outlet_dict = outlet_data.get('data', None) if \
+                                    isinstance(outlet_data, dict) else None
+            if outlet_dict:
+                outlet = Outlet(id=outlet_id, name=outlet_dict['name'])
+                outlet.save()
+        print(outlet.name)
         register = save_vend_register(user, reg)
     return Register.objects.all()
 
