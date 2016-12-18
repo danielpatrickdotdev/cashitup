@@ -136,5 +136,15 @@ STATICFILES_DIRS = [
 
 # OAuth
 
-SOCIAL_AUTH_VEND_EXTRA_DATA = ['expires', 'expires_in']
+SOCIAL_AUTH_VEND_EXTRA_DATA = ['expires',
+                               'expires_in',
+                               'name',
+                               'username',
+                               'outlet_name',
+                               'outlet_id',
+                               'outlet_ids',
+                               'account_type',
+                               'email',
+                               'image',
+]
 from .vend_keys import KEY, SECRET
