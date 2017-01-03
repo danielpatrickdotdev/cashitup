@@ -1,9 +1,0 @@
-{% extends "cashup/register_base.html" %}{% load humanize %}
-{% block title %}Select register{% endblock %}
-{% block body %}
-        <p>Registers available:</p>{% if registers %}
-        <ul>{% for register in registers %}
-            <li><a href="{% url 'set_register_takings' register.id %}">{{ register.name }}</a><p>{{ register.outlet.name }}</p><p>Open since: {{ register.open_time|naturaltime }}</p></li>{% endfor %}
-        </ul>{% else %}
-        <p>No open registers</p>{% endif %}
-{% endblock %}

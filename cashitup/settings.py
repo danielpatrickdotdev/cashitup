@@ -38,13 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-    'social_django',
-    'social_core',
     'cashup',
 ]
 
 AUTHENTICATION_BACKENDS = [
-    'social_core.backends.vend.VendOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
@@ -71,8 +68,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'social_django.context_processors.backends',
-                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -133,18 +128,3 @@ STATIC_ROOT = os.path.join(SITE_DIR, 'static/')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static/'),
 ]
-
-# OAuth
-
-SOCIAL_AUTH_VEND_EXTRA_DATA = ['expires',
-                               'expires_in',
-                               'name',
-                               'username',
-                               'outlet_name',
-                               'outlet_id',
-                               'outlet_ids',
-                               'account_type',
-                               'email',
-                               'image',
-]
-from .vend_keys import KEY, SECRET

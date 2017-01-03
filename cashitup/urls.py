@@ -18,6 +18,5 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url('', include('social_django.urls', namespace='social')),
-    url('', include('cashup.urls')),
+    url(r'^cashup/', include('cashup.urls')),
 ]
