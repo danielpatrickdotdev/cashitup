@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ['127.0.0.1', '192.168.0.6']
 # Application definition
 
 INSTALLED_APPS = [
+    'registration',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -38,11 +39,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-    'registration',
     'cashup',
+    'rules.apps.AutodiscoverRulesConfig',
 ]
 
 AUTHENTICATION_BACKENDS = [
+    'rules.permissions.ObjectPermissionBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
@@ -131,3 +133,4 @@ STATICFILES_DIRS = [
 ]
 
 LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
