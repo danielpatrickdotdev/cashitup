@@ -9,7 +9,7 @@ from getpass import getpass
 
 DATABASE = 'postgres' # OPTIONS ARE CURRENTLY 'sqlite3' and 'postgres'
 REPO_NAME = 'cashitup'
-REPO_URL = 'git@bitbucket.com:remarkablerocket/' + REPO_NAME + '.git'
+REPO_URL = 'git@github.com:remarkablerocket/' + REPO_NAME + '.git'
 
 def get_site_folder(user, site):
     return path.join('/home', user, 'sites', site)
@@ -193,7 +193,7 @@ def create_database(site_name=None):
                    "    }}\n"
                    "}}".format(REPO_NAME, env.user, password))
         append(settings_path, '\nfrom .database_settings import DATABASES')
-        
+
         with settings(warn_only=True):
             sudo('psql -c "CREATE USER {0} WITH NOCREATEDB NOCREATEUSER "'
                  '"ENCRYPTED PASSWORD E\'{1}\'"'.format(env.user, password),
@@ -250,7 +250,7 @@ def collect_static_files(site_name=None):
     if not site_name:
         site_name = env.host
     source_folder = get_source_folder(env.user, site_name)
-    
+
     with prefix('source {}/.env/bin/activate'.format(source_folder)):
         run('cd {} && python manage.py collectstatic --noinput'.format(
             source_folder))
