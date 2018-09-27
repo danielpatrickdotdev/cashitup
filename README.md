@@ -1,2 +1,2 @@
 # cashitup
-App for cashing up process with a vend-powered till
+Django site for cashing up till process
